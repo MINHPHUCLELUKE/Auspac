@@ -1,0 +1,556 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Apartment Purchase Cost Calculator</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 20px;
+            background-color: #f8f9fa;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #2c3e50;
+            text-align: center;
+            margin-bottom: 30px;
+            border-bottom: 3px solid #3498db;
+            padding-bottom: 10px;
+        }
+        .section {
+            margin-bottom: 30px;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        .section-header {
+            background-color: #3498db;
+            color: white;
+            padding: 15px;
+            font-weight: bold;
+            font-size: 18px;
+        }
+        .section-content {
+            padding: 20px;
+        }
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+        label {
+            font-weight: bold;
+            margin-bottom: 5px;
+            color: #34495e;
+        }
+        input[type="text"], input[type="number"], select {
+            padding: 10px;
+            border: 2px solid #bdc3c7;
+            border-radius: 5px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+        input[type="text"]:focus, input[type="number"]:focus, select:focus {
+            outline: none;
+            border-color: #3498db;
+        }
+        .input-field {
+            background-color: #d5f4e6 !important;
+        }
+        .calculation-field {
+            background-color: #f8f9fa;
+            color: #666;
+        }
+        .calculation-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        .calculation-table th, .calculation-table td {
+            border: 1px solid #ddd;
+            padding: 12px;
+            text-align: left;
+        }
+        .calculation-table th {
+            background-color: #f2f2f2;
+            font-weight: bold;
+        }
+        .calculation-table tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+        .highlight {
+            background-color: #fff3cd !important;
+            font-weight: bold;
+        }
+        .total-row {
+            background-color: #e8f5e8 !important;
+            font-weight: bold;
+            font-size: 16px;
+        }
+        .currency {
+            font-family: 'Courier New', monospace;
+        }
+        .savings {
+            color: #27ae60;
+            font-weight: bold;
+        }
+        .note {
+            background-color: #e8f4f8;
+            padding: 15px;
+            border-left: 4px solid #3498db;
+            margin-top: 20px;
+            font-style: italic;
+        }
+        .payment-timeline {
+            background-color: #f8f9fa;
+            padding: 15px;
+            border-radius: 5px;
+            margin-top: 20px;
+        }
+        .timeline-item {
+            margin-bottom: 10px;
+            padding: 10px;
+            background: white;
+            border-radius: 5px;
+            border-left: 4px solid #3498db;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🏠 Apartment Purchase Cost Calculator</h1>
+        
+        <!-- Input Section -->
+        <div class="section">
+            <div class="section-header">📝 Property Details & Input Parameters</div>
+            <div class="section-content">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="projectName">Project Name</label>
+                        <input type="text" id="projectName" class="input-field" placeholder="e.g., Atlas" value="Atlas">
+                    </div>
+                    <div class="form-group">
+                        <label for="unitCode">Unit Code</label>
+                        <input type="text" id="unitCode" class="input-field" placeholder="e.g., 905" value="905">
+                    </div>
+                    <div class="form-group">
+                        <label for="contractValue">Contract Value (AUD)</label>
+                        <input type="number" id="contractValue" class="input-field" placeholder="806000" value="806000">
+                    </div>
+                    <div class="form-group">
+                        <label for="usableArea">Usable Area (m²)</label>
+                        <input type="number" id="usableArea" class="input-field" placeholder="64.8" value="64.8">
+                    </div>
+                    <div class="form-group">
+                        <label for="balconyArea">Balcony Area (m²)</label>
+                        <input type="number" id="balconyArea" class="input-field" placeholder="0" value="0">
+                    </div>
+                    <div class="form-group">
+                        <label for="exchangeRate">Exchange Rate (VND/AUD)</label>
+                        <input type="number" id="exchangeRate" class="input-field" placeholder="16500" value="16500">
+                    </div>
+                    <div class="form-group">
+                        <label for="depositPercent">Deposit Percentage (%)</label>
+                        <input type="number" id="depositPercent" class="input-field" placeholder="10" value="10">
+                    </div>
+                    <div class="form-group">
+                        <label for="secondPaymentPercent">Second Payment Percentage (%)</label>
+                        <input type="number" id="secondPaymentPercent" class="input-field" placeholder="90" value="90">
+                    </div>
+                    <div class="form-group">
+                        <label for="legalFee">Legal Fee (AUD)</label>
+                        <input type="number" id="legalFee" class="input-field" placeholder="2000" value="2000">
+                    </div>
+                    <div class="form-group">
+                        <label for="firbFee">FIRB Fee (AUD)</label>
+                        <input type="number" id="firbFee" class="input-field" placeholder="15100" value="15100">
+                    </div>
+                    <div class="form-group">
+                        <label for="taxRate">Tax Rate Before Property (%)</label>
+                        <input type="number" id="taxRate" class="input-field" placeholder="5.5" value="5.5">
+                    </div>
+                    <div class="form-group">
+                        <label for="foreignerSurcharge">Foreigner Surcharge (%)</label>
+                        <input type="number" id="foreignerSurcharge" class="input-field" placeholder="8" value="8">
+                    </div>
+                    <div class="form-group">
+                        <label for="offThePlanDiscount">Off-the-Plan Discount (AUD)</label>
+                        <input type="number" id="offThePlanDiscount" class="input-field" placeholder="35100" value="35100">
+                    </div>
+                    <div class="form-group">
+                        <label for="reservationDeposit">Reservation Deposit (AUD)</label>
+                        <input type="number" id="reservationDeposit" class="input-field" placeholder="2000" value="2000">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Calculation Section -->
+        <div class="section">
+            <div class="section-header">🧮 Cost Breakdown & Calculations</div>
+            <div class="section-content">
+                <table class="calculation-table">
+                    <thead>
+                        <tr>
+                            <th>Item</th>
+                            <th>Amount (AUD)</th>
+                            <th>Amount (VND)</th>
+                            <th>Notes</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Step 1: Reservation Deposit</strong></td>
+                            <td class="currency" id="reservationAUD">$2,000</td>
+                            <td class="currency" id="reservationVND">33,000,000 ₫</td>
+                            <td>Refundable after 10% payment</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Step 2: Contract Signing (10%)</strong></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                        </tr>
+                        <tr>
+                            <td>&nbsp;&nbsp;• 10% Contract Value</td>
+                            <td class="currency" id="deposit10AUD">$80,600</td>
+                            <td class="currency" id="deposit10VND">1,329,900,000 ₫</td>
+                            <td>14 days after signing</td>
+                        </tr>
+                        <tr>
+                            <td>&nbsp;&nbsp;• Legal Fee</td>
+                            <td class="currency" id="legalFeeAUD">$2,000</td>
+                            <td class="currency" id="legalFeeVND">33,000,000 ₫</td>
+                            <td>Lawyer fees</td>
+                        </tr>
+                        <tr>
+                            <td>&nbsp;&nbsp;• FIRB Fee</td>
+                            <td class="currency" id="firbFeeAUD">$15,100</td>
+                            <td class="currency" id="firbFeeVND">249,150,000 ₫</td>
+                            <td>Foreign investment approval</td>
+                        </tr>
+                        <tr class="highlight">
+                            <td><strong>Step 2 Total</strong></td>
+                            <td class="currency" id="step2TotalAUD">$97,700</td>
+                            <td class="currency" id="step2TotalVND">1,612,050,000 ₫</td>
+                            <td></td>
+                        </tr>
+                        <tr>
+                            <td><strong>Step 3: Final Payment (90%)</strong></td>
+                            <td></td>
+                            <td></td>
+                            <td>End of 2028</td>
+                        </tr>
+                        <tr>
+                            <td>&nbsp;&nbsp;• 90% Contract Value</td>
+                            <td class="currency" id="payment90AUD">$725,400</td>
+                            <td class="currency" id="payment90VND">11,979,100,000 ₫</td>
+                            <td>Remaining balance</td>
+                        </tr>
+                        <tr>
+                            <td>&nbsp;&nbsp;• Tax Before Property</td>
+                            <td class="currency" id="taxBeforeAUD">$4,933</td>
+                            <td class="currency" id="taxBeforeVND">81,394,500 ₫</td>
+                            <td>5.5% tax rate</td>
+                        </tr>
+                        <tr>
+                            <td>&nbsp;&nbsp;• Foreigner Surcharge</td>
+                            <td class="currency" id="foreignerSurchargeAUD">$64,480</td>
+                            <td class="currency" id="foreignerSurchargeVND">1,063,920,000 ₫</td>
+                            <td>8% surcharge</td>
+                        </tr>
+                        <tr>
+                            <td>&nbsp;&nbsp;• Off-the-Plan Discount</td>
+                            <td class="currency savings" id="discountAUD">-$35,100</td>
+                            <td class="currency savings" id="discountVND">-579,150,000 ₫</td>
+                            <td>Tax savings</td>
+                        </tr>
+                        <tr class="highlight">
+                            <td><strong>Step 3 Total</strong></td>
+                            <td class="currency" id="step3TotalAUD">$759,713</td>
+                            <td class="currency" id="step3TotalVND">12,545,264,500 ₫</td>
+                            <td></td>
+                        </tr>
+                        <tr class="total-row">
+                            <td><strong>TOTAL COST (Steps 2 + 3)</strong></td>
+                            <td class="currency" id="totalCostAUD">$857,413</td>
+                            <td class="currency" id="totalCostVND">14,157,314,500 ₫</td>
+                            <td><strong>Final amount due</strong></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Annual Costs Section -->
+        <div class="section">
+            <div class="section-header">📅 Annual Ongoing Costs</div>
+            <div class="section-content">
+                <table class="calculation-table">
+                    <thead>
+                        <tr>
+                            <th>Annual Cost Item</th>
+                            <th>Amount (AUD)</th>
+                            <th>Amount (VND)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Owner Corporation Fee</td>
+                            <td class="currency">$4,000</td>
+                            <td class="currency" id="ownerCorpVND">66,000,000 ₫</td>
+                        </tr>
+                        <tr>
+                            <td>Water Rate</td>
+                            <td class="currency">$2,230</td>
+                            <td class="currency" id="waterRateVND">36,795,000 ₫</td>
+                        </tr>
+                        <tr>
+                            <td>Fire Levy</td>
+                            <td class="currency">$198</td>
+                            <td class="currency" id="fireLevyVND">3,267,000 ₫</td>
+                        </tr>
+                        <tr>
+                            <td>Council Rate</td>
+                            <td class="currency">$1,790</td>
+                            <td class="currency" id="councilRateVND">29,535,000 ₫</td>
+                        </tr>
+                        <tr class="total-row">
+                            <td><strong>Total Annual Costs</strong></td>
+                            <td class="currency">$8,218</td>
+                            <td class="currency" id="totalAnnualVND">135,597,000 ₫</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- One-time Additional Costs -->
+        <div class="section">
+            <div class="section-header">💰 One-time Additional Costs</div>
+            <div class="section-content">
+                <table class="calculation-table">
+                    <thead>
+                        <tr>
+                            <th>One-time Cost Item</th>
+                            <th>Amount (AUD)</th>
+                            <th>Amount (VND)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Property Registration Fee</td>
+                            <td class="currency">$2,250</td>
+                            <td class="currency" id="registrationVND">37,125,000 ₫</td>
+                        </tr>
+                        <tr>
+                            <td>Pexa Information Registration</td>
+                            <td class="currency">$152</td>
+                            <td class="currency" id="pexaVND">2,508,000 ₫</td>
+                        </tr>
+                        <tr>
+                            <td>Government Research Cost</td>
+                            <td class="currency">$880</td>
+                            <td class="currency" id="govResearchVND">14,520,000 ₫</td>
+                        </tr>
+                        <tr>
+                            <td>Utility Connection Fee</td>
+                            <td class="currency">$1,000</td>
+                            <td class="currency" id="utilityVND">16,500,000 ₫</td>
+                        </tr>
+                        <tr>
+                            <td>Reserve Fund (if needed)</td>
+                            <td class="currency">$5,000</td>
+                            <td class="currency" id="reserveFundVND">82,500,000 ₫</td>
+                        </tr>
+                        <tr class="total-row">
+                            <td><strong>Total One-time Additional Costs</strong></td>
+                            <td class="currency">$9,282</td>
+                            <td class="currency" id="totalOnetimeVND">153,153,000 ₫</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Payment Timeline -->
+        <div class="section">
+            <div class="section-header">⏰ Payment Timeline</div>
+            <div class="section-content">
+                <div class="payment-timeline">
+                    <div class="timeline-item">
+                        <strong>Step 1:</strong> Reservation Deposit - $2,000 AUD (Refundable)
+                    </div>
+                    <div class="timeline-item">
+                        <strong>Step 2:</strong> Contract Signing (14 days after signing) - $97,700 AUD
+                        <br><small>Includes: 10% contract value + legal fees + FIRB fee</small>
+                    </div>
+                    <div class="timeline-item">
+                        <strong>Step 3:</strong> Final Payment (End of 2028) - $759,713 AUD
+                        <br><small>Includes: 90% balance + taxes + surcharges - discounts</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Summary -->
+        <div class="section">
+            <div class="section-header">📊 Summary & Key Figures</div>
+            <div class="section-content">
+                <table class="calculation-table">
+                    <tbody>
+                        <tr class="total-row">
+                            <td><strong>Total Property Cost</strong></td>
+                            <td class="currency" id="summaryTotalAUD">$857,413</td>
+                            <td class="currency" id="summaryTotalVND">14,157,314,500 ₫</td>
+                        </tr>
+                        <tr>
+                            <td>Cost per m² (Usable Area)</td>
+                            <td class="currency" id="costPerSqmAUD">$13,228</td>
+                            <td class="currency" id="costPerSqmVND">218,262,000 ₫</td>
+                        </tr>
+                        <tr>
+                            <td>Total Annual Ongoing Costs</td>
+                            <td class="currency">$8,218</td>
+                            <td class="currency">135,597,000 ₫</td>
+                        </tr>
+                        <tr>
+                            <td>One-time Additional Costs</td>
+                            <td class="currency">$9,282</td>
+                            <td class="currency">153,153,000 ₫</td>
+                        </tr>
+                        <tr class="highlight">
+                            <td><strong>Total First Year Cost</strong></td>
+                            <td class="currency" id="firstYearAUD">$874,913</td>
+                            <td class="currency" id="firstYearVND">14,446,064,500 ₫</td>
+                        </tr>
+                    </tbody>
+                </table>
+                
+                <div class="note">
+                    <strong>Note:</strong> All calculations are estimates based on the provided information. 
+                    The lawyer will determine exact figures before final payment. Off-the-plan concession 
+                    provides tax savings for properties purchased before construction begins.
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function formatCurrency(amount, currency = 'AUD') {
+            if (currency === 'AUD') {
+                return new Intl.NumberFormat('en-AU', {
+                    style: 'currency',
+                    currency: 'AUD',
+                    minimumFractionDigits: 0
+                }).format(amount);
+            } else {
+                return new Intl.NumberFormat('vi-VN', {
+                    minimumFractionDigits: 0
+                }).format(amount) + ' ₫';
+            }
+        }
+
+        function calculateCosts() {
+            const contractValue = parseFloat(document.getElementById('contractValue').value) || 806000;
+            const exchangeRate = parseFloat(document.getElementById('exchangeRate').value) || 16500;
+            const depositPercent = parseFloat(document.getElementById('depositPercent').value) || 10;
+            const secondPaymentPercent = parseFloat(document.getElementById('secondPaymentPercent').value) || 90;
+            const legalFee = parseFloat(document.getElementById('legalFee').value) || 2000;
+            const firbFee = parseFloat(document.getElementById('firbFee').value) || 15100;
+            const taxRate = parseFloat(document.getElementById('taxRate').value) || 5.5;
+            const foreignerSurcharge = parseFloat(document.getElementById('foreignerSurcharge').value) || 8;
+            const offThePlanDiscount = parseFloat(document.getElementById('offThePlanDiscount').value) || 35100;
+            const reservationDeposit = parseFloat(document.getElementById('reservationDeposit').value) || 2000;
+            const usableArea = parseFloat(document.getElementById('usableArea').value) || 64.8;
+
+            // Step 1: Reservation Deposit
+            document.getElementById('reservationAUD').textContent = formatCurrency(reservationDeposit);
+            document.getElementById('reservationVND').textContent = formatCurrency(reservationDeposit * exchangeRate, 'VND');
+
+            // Step 2: Contract Signing
+            const deposit10 = contractValue * (depositPercent / 100);
+            const step2Total = deposit10 + legalFee + firbFee;
+            
+            document.getElementById('deposit10AUD').textContent = formatCurrency(deposit10);
+            document.getElementById('deposit10VND').textContent = formatCurrency(deposit10 * exchangeRate, 'VND');
+            document.getElementById('legalFeeAUD').textContent = formatCurrency(legalFee);
+            document.getElementById('legalFeeVND').textContent = formatCurrency(legalFee * exchangeRate, 'VND');
+            document.getElementById('firbFeeAUD').textContent = formatCurrency(firbFee);
+            document.getElementById('firbFeeVND').textContent = formatCurrency(firbFee * exchangeRate, 'VND');
+            document.getElementById('step2TotalAUD').textContent = formatCurrency(step2Total);
+            document.getElementById('step2TotalVND').textContent = formatCurrency(step2Total * exchangeRate, 'VND');
+
+            // Step 3: Final Payment
+            const payment90 = contractValue * (secondPaymentPercent / 100);
+            const taxBefore = (contractValue * taxRate) / 100;
+            const foreignerSurchargeAmount = (contractValue * foreignerSurcharge) / 100;
+            const step3Total = payment90 + taxBefore + foreignerSurchargeAmount - offThePlanDiscount;
+            
+            document.getElementById('payment90AUD').textContent = formatCurrency(payment90);
+            document.getElementById('payment90VND').textContent = formatCurrency(payment90 * exchangeRate, 'VND');
+            document.getElementById('taxBeforeAUD').textContent = formatCurrency(taxBefore);
+            document.getElementById('taxBeforeVND').textContent = formatCurrency(taxBefore * exchangeRate, 'VND');
+            document.getElementById('foreignerSurchargeAUD').textContent = formatCurrency(foreignerSurchargeAmount);
+            document.getElementById('foreignerSurchargeVND').textContent = formatCurrency(foreignerSurchargeAmount * exchangeRate, 'VND');
+            document.getElementById('discountAUD').textContent = formatCurrency(-offThePlanDiscount);
+            document.getElementById('discountVND').textContent = formatCurrency(-offThePlanDiscount * exchangeRate, 'VND');
+            document.getElementById('step3TotalAUD').textContent = formatCurrency(step3Total);
+            document.getElementById('step3TotalVND').textContent = formatCurrency(step3Total * exchangeRate, 'VND');
+
+            // Total Cost
+            const totalCost = step2Total + step3Total;
+            document.getElementById('totalCostAUD').textContent = formatCurrency(totalCost);
+            document.getElementById('totalCostVND').textContent = formatCurrency(totalCost * exchangeRate, 'VND');
+
+            // Annual costs
+            document.getElementById('ownerCorpVND').textContent = formatCurrency(4000 * exchangeRate, 'VND');
+            document.getElementById('waterRateVND').textContent = formatCurrency(2230 * exchangeRate, 'VND');
+            document.getElementById('fireLevyVND').textContent = formatCurrency(198 * exchangeRate, 'VND');
+            document.getElementById('councilRateVND').textContent = formatCurrency(1790 * exchangeRate, 'VND');
+            document.getElementById('totalAnnualVND').textContent = formatCurrency(8218 * exchangeRate, 'VND');
+
+            // One-time additional costs
+            document.getElementById('registrationVND').textContent = formatCurrency(2250 * exchangeRate, 'VND');
+            document.getElementById('pexaVND').textContent = formatCurrency(152 * exchangeRate, 'VND');
+            document.getElementById('govResearchVND').textContent = formatCurrency(880 * exchangeRate, 'VND');
+            document.getElementById('utilityVND').textContent = formatCurrency(1000 * exchangeRate, 'VND');
+            document.getElementById('reserveFundVND').textContent = formatCurrency(5000 * exchangeRate, 'VND');
+            document.getElementById('totalOnetimeVND').textContent = formatCurrency(9282 * exchangeRate, 'VND');
+
+            // Summary
+            document.getElementById('summaryTotalAUD').textContent = formatCurrency(totalCost);
+            document.getElementById('summaryTotalVND').textContent = formatCurrency(totalCost * exchangeRate, 'VND');
+            
+            const costPerSqm = totalCost / usableArea;
+            document.getElementById('costPerSqmAUD').textContent = formatCurrency(costPerSqm);
+            document.getElementById('costPerSqmVND').textContent = formatCurrency(costPerSqm * exchangeRate, 'VND');
+            
+            const firstYearTotal = totalCost + 8218 + 9282;
+            document.getElementById('firstYearAUD').textContent = formatCurrency(firstYearTotal);
+            document.getElementById('firstYearVND').textContent = formatCurrency(firstYearTotal * exchangeRate, 'VND');
+        }
+
+        // Add event listeners to all input fields
+        document.querySelectorAll('input').forEach(input => {
+            input.addEventListener('input', calculateCosts);
+        });
+
+        // Initial calculation
+        calculateCosts();
+    </script>
+</body>
+</html>
